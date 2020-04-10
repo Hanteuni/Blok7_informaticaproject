@@ -13,6 +13,8 @@ def main():
     data = data_sorter(hdr, lijst_posities, data)
     data_tuplelist_lineage, data_tuplelist_protein, \
     data_tuplelist_fragment = data_sorteren(data)
+    data_insertie(data_tuplelist_lineage, data_tuplelist_protein,
+                  data_tuplelist_fragment)
 
 
 def file_reader():
@@ -139,9 +141,7 @@ def data_sorteren(data):
         counter += 1
         data_list_protein[counter].extend(tuple(lijst2[9:10]))      #Accesion code
     for lijst3 in data_list_protein:
-        print("protein2")
         data_tuplelist_protein.append(tuple(lijst3))                #e-val, score, start, stop, qcov
-        print(tuple(lijst3))
 
     return data_tuplelist_lineage, data_tuplelist_protein, \
            data_tuplelist_fragment
@@ -162,42 +162,26 @@ def data_insertie(data_tuplelist_lineage, data_tuplelist_protein,
         host="hannl-hlo-bioinformatica-mysqlsrv.mysql.database.azure.com",
         user="owe7_pg6@hannl-hlo-bioinformatica-mysqlsrv",
         password="blaat1234",
-        host="3306")
-
-    query = "INSERT INTO ProjectBlok4_Lineage (Lineage_naam) " \
-            "VALUES (%s)"
-    insert_gegevens = data_tuplelist_lineage
-    # Prepared=True en executemany zorgen dat je meerdere lijsten aan gegevens
-    # kan gebruiken
+        db="owe7_pg6")
+    insert_gegevens = ""
+    query = "INSERT INTO query (header, sequence) " \
+            "VALUES (%s, %s)"
+    for item in data_tuplelist_fragment:
+        print(item[0])      #blast_id
+        print(item[1])      #seq
+        tempList = []
+        tempList.append(item[0])
+        tempList.append(item[1])
+        insert_gegevens = tuple(tempList)
+    Prepared=True
     cursor = conn.cursor(prepared=True)
     cursor.executemany(query, insert_gegevens)
-    cursor.close()
-    conn.commit()
-    print("---------Data insertion into table Lineage done----------")
-
-    query1 = "INSERT INTO ProjectBlok4_Fragment (Fragment_naam, " \
-             "Fragment_sequentie) " \
-             "VALUES (%s, %s)"
-    insert_gegevens1 = data_tuplelist_fragment
-    cursor = conn.cursor(prepared=True)
-    cursor.executemany(query1, insert_gegevens1)
-    cursor.close()
-    conn.commit()
-    print("---------Data insertion into table Fragment done----------")
-    query2 = "INSERT INTO ProjectBlok4_Protein (Expect, " \
-             "Alignment_scores, Per_ident, Query_coverage, Sequentie, " \
-             "Eiwit_Naam, Accessiecode) " \
-             "VALUES (%s, %s, %s, %s, %s, %s, %s)"
-    insert_gegevens2 = data_tuplelist_protein
-    cursor = conn.cursor(prepared=True)
-    cursor.executemany(query2, insert_gegevens2)
     cursor.close()
     conn.commit()
     print("---------Data insertion into table Protein done----------")
     print("Insertion done, closing connection...")
     conn.close()
     print("Connection closed")
-
 
 
 main()
