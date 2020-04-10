@@ -24,14 +24,6 @@ def validate_dna(dna_seq):  # Check if fasta file is a DNA sequence
     return fasta_sequence
 
 
-# def validate_dna(dna_seq):  # Check if fasta file is a DNA sequence
-#     fasta_sequence = dna_seq.upper()
-#     for nuc in fasta_sequence:
-#         if nuc not in Nucleotides:
-#             return "This isn't a DNA sequence"
-#     return fasta_sequence
-
-
 def reverse_compliment(seq):  # Mirrors forward strand + calculates complementary nucleotide resulting in a reverse strand.
     compliment_nucleotides = {'A': 'T', 'T': 'A', 'G': 'C', 'C': 'G'}
     return ''.join([compliment_nucleotides[nucleotide] for nucleotide in seq])[::-1]
